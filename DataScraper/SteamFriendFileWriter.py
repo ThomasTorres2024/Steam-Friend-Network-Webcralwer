@@ -1,4 +1,13 @@
+"""
+@author Thomas Torres
+@date 12/30/25 
+@brief Writes information obtained from the steam webscraper into a .csv file.
+A user's UID (their steam ID or custom URL, whichever is recorded) is stored, and then all of the other
+assosciated IDs with that ID
+"""
+
 from User import UserData
+import os 
 
 """Saves scraped data in files. To use, create an object using the fields appropriately, and then use the save file
 command. Dec 20 2024"""
@@ -9,7 +18,22 @@ class SteamFriendsFileWriter:
         self.HEADER = "uid,connections"
         self.data = data 
         self.directory = directory 
-
+        
+        self.EXPECTED_ROOT_RENDER_DIRECTORY = "SavedData"
+        self.EXPECTED_STEAM_ROOT_DIRECTORY = self.EXPECTED_ROOT_RENDER_DIRECTORY+"/Steam"
+        
+        #check if corresponding directories exist 
+        if not os.path.isdir(self.EXPECTED_ROOT_RENDER_DIRECTORY):
+            os.mkdir(self.EXPECTED_ROOT_RENDER_DIRECTORY) 
+        
+        #check if the specific steam saver is there or not 
+        if not os.path.isdir(self.EXPECTED_STEAM_ROOT_DIRECTORY):
+            os.mkdir(self.EXPECTED_STEAM_ROOT_DIRECTORY)
+            
+        #check if user directory is there too 
+        if not os.path.isdir(self.EXPECTED_STEAM_ROOT_DIRECTORY+"/Users/"):
+            os.mkdir(self.EXPECTED_STEAM_ROOT_DIRECTORY+"/Users/")
+    
     """Refines a list of strings into a single string for being saved.
     Called by the program when saving the array """
     def refine_list_for_saving(self, list_names : list[str]) -> str:
@@ -27,13 +51,13 @@ class SteamFriendsFileWriter:
 
         #go through every use in the data and then add them to the file string 
         for user in self.data:
-            print(user)
+            #print(user)
             uid : str = user.get_uid()
 
             #get the list of strings, format them so that they can be saved in a file 
             connections_str : str = self.refine_list_for_saving(user.get_connections())   
             out_str+=f"{uid},{connections_str}\n"
-            print(out_str)
+            #print(out_str)
         
         #save file where directory specifies 
         with open(self.directory,'w') as file:

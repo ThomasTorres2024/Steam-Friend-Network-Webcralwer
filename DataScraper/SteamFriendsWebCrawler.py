@@ -1,3 +1,10 @@
+"""
+@author Thomas Torres
+@date Written Dec 2024, Last Modified Dec 30 2025 
+@brief Goes through a steam profile, and obtains all of its friends, and iteratively continues
+the process. 
+"""
+
 from DataScraper.SocialMediaConnectionWebCrawler import SocialMediaConnectionFinder
 class SteamFriendsCrawler(SocialMediaConnectionFinder):
 

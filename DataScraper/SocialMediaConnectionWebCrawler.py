@@ -1,7 +1,15 @@
+"""
+@author Thomas Torres
+@date Written Dec 2024, Last Modified Dec 30 2025 
+@brief Abstract class for social media scrubbers
+"""
+
 from User import UserData
 from bs4 import BeautifulSoup
 import requests
 from DataScraper.LinkQueue import Node , QueueLink
+import time #for sleeping 
+import random #for generating good sleep durations
 
 
 """This class will be overriden by child classes. This represents the general behaviors of a social media scraper.
@@ -54,53 +62,58 @@ class SocialMediaConnectionFinder:
     def modify_link(self,link : str) -> str:
         pass 
     
-    """Version for processing one person"""
-    def process_links_old(self) -> None:
-        total : set[str] = set()
-        found_links : list[str]= []
+    """Version for processing one person alone, outdated method"""
+    # def process_links_old(self) -> None:
+    #     total : set[str] = set()
+    #     found_links : list[str]= []
 
-        #we want to iterate through a user's friends, and then the friends's of the user's friends, and then save them
+    #     #we want to iterate through a user's friends, and then the friends's of the user's friends, and then save them
         
-
-        #
-        while self.queue_head and self.iterations_per_root_link > i:
-            #find all the a tags on the steam site 
-            link = self.modify_link(self.queue_head.get_val())
-            html_request_info = requests.get(link)
-            souped_request_info : BeautifulSoup = BeautifulSoup(html_request_info.text)
-
-            #processes site links 
-            self.process_site_uniquely(souped_request_info,found_links)
+    #     while self.queue_head and self.iterations_per_root_link > i:
+    #         #find all the a tags on the steam site 
+    #         link = self.modify_link(self.queue_head.get_val())
             
-            #add to list of users
-            self.user_data_list.append(UserData(link,found_links))
+    #         html_request_info = requests.get(link)
+    #         souped_request_info : BeautifulSoup = BeautifulSoup(html_request_info.text)
 
-            #update the header and iterator 
-            self.queue_head = self.queue_head.get_next()
-            i+=1
+    #         #processes site links 
+    #         self.process_site_uniquely(souped_request_info,found_links)
+            
+    #         #add to list of users
+    #         self.user_data_list.append(UserData(link,found_links))
 
-            #add new links to queue,  reset found links
-            self.site_queue.add_links(found_links)
-            total =  total.union(set(found_links))
-            found_links = []
+    #         #update the header and iterator 
+    #         self.queue_head = self.queue_head.get_next()
+    #         i+=1
 
-            if self.queue_head:
-                print(f"{self.queue_head.get_val()},{i+1}")
-            else:
-                print("end")
+    #         #add new links to queue,  reset found links
+    #         self.site_queue.add_links(found_links)
+    #         total =  total.union(set(found_links))
+    #         found_links = []
 
-        print(f"Number of friends: len(total)")
-        return found_links
+    #         if self.queue_head:
+    #             print(f"{self.queue_head.get_val()},{i+1}")
+    #         else:
+    #             print("end")
 
-    """Abstract function which processes links"""
+    #     print(f"Number of friends: len(total)")
+    #     return found_links
+
+    """Abstract function which processes links by visiting all of the assosciated (concrete child classes determine this)
+    users, and then adding their links to a list of links. We continue this process until some criteria is met (child determines).
+    """
     def process_links(self) -> None:
         total : set[str] = set()
         found_links : list[str]= []
 
         #find all the a tags on the steam site 
         link = self.modify_link(self.queue_head.get_val())
+        
+        #toggle on request time, don't want to overload the site and get blocked, should vary this somewhat 
+        # time.sleep(random.random()*100)
         html_request_info = requests.get(link)
         souped_request_info : BeautifulSoup = BeautifulSoup(html_request_info.text)
+        
         #processes site links 
         self.process_site_uniquely(souped_request_info,found_links)
         new_queue: QueueLink = QueueLink(found_links)  
@@ -111,6 +124,7 @@ class SocialMediaConnectionFinder:
         while new_queue_head:
             #find all the a tags on the steam site 
             link = self.modify_link(new_queue_head.get_val())
+            
             html_request_info = requests.get(link)
             souped_request_info : BeautifulSoup = BeautifulSoup(html_request_info.text)
 
@@ -129,10 +143,11 @@ class SocialMediaConnectionFinder:
             total =  total.union(set(found_links))
             found_links = []
 
-            if new_queue_head:
-                print(f"{new_queue_head.get_val()},{i+1}")
-            else:
-                print("end")
+            #this clutters stuffs a lot for steam, so it's best this be done by the child classes
+            #if new_queue_head:
+            #    print(f"{new_queue_head.get_val()},{i+1}")
+            #else:
+            #    print("end")
 
-        print(f"Number of friends: len(total)")
+        #print(f"Number of friends: len(total)")
 

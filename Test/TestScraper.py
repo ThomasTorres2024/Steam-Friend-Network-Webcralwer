@@ -12,8 +12,8 @@ user functions, there's one for users """
 def test_steam_scraper():
     scraper : ScrapeData =ScrapeData() 
     
-    #using free roam for users 
-    scraper.steam_free_roam(-1)
+    #using free roam for users, test method specifically for this, just missing the UI part 
+    scraper.steam_free_roam_test(-1,['https://steamcommunity.com/id/St4ck'])
 
 def main():
     
