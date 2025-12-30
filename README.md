@@ -22,10 +22,10 @@ If __depth__ $>1$ then the scrape occurs until __depth__ many degrees of separat
 
 ### Max Number Common Friends 
 
-Given a person, $P$ do a traversal of $\text{depth}=1$ along the user's friends. Let their set of recorded friends be $F=\{f_{1},f_{2},\cdots,f_{n} \}$. We then do a traversal of $\text{depth}1$ for $f \in F$. For each friend, $g$ of $f$, if $g \in F$ then the score is incremented. We repeat this for all $f$ in $F$. I am not sure if this has a name, but for now I'm going to call it similarity. We can then construct the graph only using $F$ above some given similarity threshold:
+Given a person, $P$ do a traversal of $\text{depth}=1$ along the user's friends. Let their set of recorded friends be $F=\{ f_{1},f_{2},\cdots,f_{n} \}$. We then do a traversal of $\text{depth}1$ for $f \in F$. For each friend, $g$ of $f$, if $g \in F$ then the score is incremented. We repeat this for all $f$ in $F$. I am not sure if this has a name, but for now I'm going to call it similarity. We can then construct the graph only using $F$ above some given similarity threshold:
 
 <img width="1600" height="835" alt="steam_user_friends" src="https://github.com/user-attachments/assets/96fc8169-f5bd-4201-b411-906acee1a109" />
 
-The produced visualization shows all friends in $F$ which have achieved a similarity where $\text{similarity} \geq 2}$
+The produced visualization shows all friends in $F$ which have achieved a similarity where $\text{similarity} \geq 2$
 
 # Math Functions 
