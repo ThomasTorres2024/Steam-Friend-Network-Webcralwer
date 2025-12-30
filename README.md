@@ -6,10 +6,10 @@ For now, just basic visualization and recursive crawling is support. Storage is 
 #CLI Usage 
 
 From executing ```main.py``` you enter a menu structure. With commands corresponding to different modes and functions. 
-```1``` n - Scrape Mode 
-```2``` - Render/Math Functions
-```3``` - Help 
-```4``` - Exit 
+  * ```1``` n - Scrape Mode 
+  * ```2``` - Render/Math Functions
+  * ```3``` - Help 
+  * ```4``` - Exit 
 
 ---
 # Scrape 
