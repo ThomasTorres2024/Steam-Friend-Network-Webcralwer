@@ -9,20 +9,28 @@ class ConsoleDecisionLoop:
 
     """Method to get user input for commands."""
     def loop_over_decision_menu(self):
+        
         self.help_command()
-        user_option_str : str = input("Enter a command. 0 For help.")
+        print("\n"+"*"*50)
+        user_option_str : str = input("Enter a command. 0 For help: ")
+        
         while(user_option_str!="-1"):
+            print("\n")
+            
+            #if the choice the user made for an option is valid, call the corresponding function:
             if user_option_str in self.menu:
                 #call function 
                 self.menu[user_option_str]()
+            
+            #otherwise error message, and continue the execution cycle 
             elif user_option_str!= "-1" and user_option_str not in self.menu:
                 print(f"ERROR. Command not recognized:{user_option_str}")
             user_option_str : str = input("Enter a command. 0 For help.")
 
-    """Help command to display options to the user."""
+    """Abstract function. Help command to display options to the user."""
     def help_command(self):
         pass
 
-    """This value is overriden in child classes such that each function can have its own"""
+    """Abstract function. This value is overriden in child classes such that each function can have its own"""
     def create_menu(self):
         pass 
