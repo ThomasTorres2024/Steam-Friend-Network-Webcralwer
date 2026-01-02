@@ -1,6 +1,7 @@
 """
 @author Thomas Torres
 @date 12/30/25 
+
 @brief Writes information obtained from the steam webscraper into a .csv file.
 A user's UID (their steam ID or custom URL, whichever is recorded) is stored, and then all of the other
 assosciated IDs with that ID
@@ -21,18 +22,6 @@ class SteamFriendsFileWriter:
         
         self.EXPECTED_ROOT_RENDER_DIRECTORY = "SavedData"
         self.EXPECTED_STEAM_ROOT_DIRECTORY = self.EXPECTED_ROOT_RENDER_DIRECTORY+"/Steam"
-        
-        #check if corresponding directories exist 
-        if not os.path.isdir(self.EXPECTED_ROOT_RENDER_DIRECTORY):
-            os.mkdir(self.EXPECTED_ROOT_RENDER_DIRECTORY) 
-        
-        #check if the specific steam saver is there or not 
-        if not os.path.isdir(self.EXPECTED_STEAM_ROOT_DIRECTORY):
-            os.mkdir(self.EXPECTED_STEAM_ROOT_DIRECTORY)
-            
-        #check if user directory is there too 
-        if not os.path.isdir(self.EXPECTED_STEAM_ROOT_DIRECTORY+"/Users/"):
-            os.mkdir(self.EXPECTED_STEAM_ROOT_DIRECTORY+"/Users/")
     
     """Refines a list of strings into a single string for being saved.
     Called by the program when saving the array """

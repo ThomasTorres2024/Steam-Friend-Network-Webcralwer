@@ -19,11 +19,14 @@ class MathRendering(ConsoleDecisionLoop):
     #where all files are saved to
     ROOT_OUT_DIR : str 
 
+    RENDER_DIRECTORY : str 
+    
     """Create object initialize vals"""
     def __init__(self):
         super().__init__()
         self.user_list=[]
         self.ROOT_FILE_DIR = "SavedData/Steam/"
+        self.RENDER_DIRECTORY="Renders/Steam/Users"
 
     #######################################
     #Getters and Setters
@@ -48,11 +51,16 @@ class MathRendering(ConsoleDecisionLoop):
                      "1":self.list_steam_files,
                      "2":self.visualize_persons_own_friendgroup}
 
+    """
+    @brief Returns the set of all assosciated UID's added to a user. 
+    @return List of user data objects. 
+    """
     def get_uids(self)->list[list[UserData]]:
         input_str = ""
         people :list[str] =[]
+        
         while input_str != "-1":
-            input_str= input("Enter file name: ")
+            input_str= input("Enter file name, -1 to terminate.: ")
             if input_str!= "-1":
                 people.append(input_str)
 
@@ -62,38 +70,89 @@ class MathRendering(ConsoleDecisionLoop):
 
         #read in file list and append
         for person in people:
-            file_name : str = ROOT_INSTANCE+person
-            file_reader_instance : DataFileReader = DataFileReader(file_name)
-            all_users.append(file_reader_instance.get_user_list())
+            
+            #read in datafile(s) user entered and get corresponding UIDs 
+            try:
+                file_name : str = ROOT_INSTANCE+person
+                file_reader_instance : DataFileReader = DataFileReader(file_name)
+                all_users.append(file_reader_instance.get_user_list())
+            #handle file DNE error 
+            except FileNotFoundError: 
+                print(f"ERROR. File {person} could not be opened.")
         
         return all_users
 
+
+    """
+    @brief CLI support allowing users to 
+    
+    Generic Function Desc:
+    
+    Takes all of the friends assosciated with a user, and iterates over them. 
+    Iterates over each friend, f, in friends, and determines if every friend, g, of f is in 
+    the set of friends of the root user. Their "similarity" score is incremented when this is done.  
+    """
     def visualize_persons_own_friendgroup(self):
+        
+        #get all of the friends assosciated with a user 
         users : list[list[UserData]] = self.get_uids()[0]
+        self.visualize_persons_own_friendgroup_base(users)
+        
+    
+    """
+    @brief 
+    """
+    def visualize_persons_own_friendgroup_random(self):
+        pass 
+    
+    
+    def visualize_persons_own_friendgroup_with_links(self, users : list[list[UserData]]):
+        pass 
+        
+        #scrape for users 
+    
+    """
+    @brief Takes all of the friends assosciated with a user, and iterates over them. 
+    Iterates over each friend, f, in friends, and determines if every friend, g, of f is in 
+    the set of friends of the root user. Their "similarity" score is incremented when this is done.  
+    
+    @param users - The users which will be considered in the render 
+    """
+    def visualize_persons_own_friendgroup_base(self, users : list[list[UserData]]):
+        
         friends : set = set()
         graph = networkx.Graph()
+        
+        #load in friends into a set 
         for user in users:
             friends.add(user.get_uid())
         
+        #go over all friends of the user, and if they are a friend of the 
+        #user, then look at their friends and check if they are in the same set 
         for i in range(len(users)):
             user : UserData  = users[i]
             connections : list[str] = user.get_connections()
             for connection in connections:
                 if connection in friends:
                     graph.add_edge(connection,user.get_uid())
+                    
         # Create a color map
         cmap = plt.cm.get_cmap('viridis')
         degrees = dict(graph.degree())
 
-        print(degrees)
-
         # Assign colors to nodes based on degree
         node_colors = [cmap(degrees[node] / max(degrees.values())) for node in graph.nodes()]
+        
+        sizes = [200]*len(degrees)
+        
+        #draw and visualize 
         pos = networkx.spring_layout(graph, k=1.2)
-        networkx.draw(graph, pos, with_labels=True,font_size = 10,node_color=node_colors)
-        plt.show() 
+        networkx.draw(graph, pos, node_size=sizes, with_labels=True,font_size = 5, font_color='red', node_color=node_colors)
+        plt.title(f"Visualization of Mutual Friend Score")
+        
+        #save resulting render
 
-
+        
     def visualize_union_friends(self):
         pass 
 
@@ -179,3 +238,11 @@ class MathRendering(ConsoleDecisionLoop):
         uid_str : str = split_url[3]+"-"+split_url[4]+"-"
         current_time = time.strftime("%Y-%m-%d %H-%M-%S")
         return self.ROOT_OUT_DIR+uid_str+current_time+".csv"
+    
+    """Takes in a stem URL which either ends in /id/example_id or profiles/123456.. example  number, 
+    so we have to split this and get the current time and root and add this together to make the out file directory"""
+    def generate_render_file_name(self, user_url : str) ->str:
+        split_url :str= user_url.split("/")
+        uid_str : str = split_url[3]+"-"+split_url[4]+"-"
+        
+        return self.RENDER_DIRECTORY+uid_str+".png"
