@@ -24,13 +24,24 @@ Tests renderer on different functions
 """
 def test_renderer():
     
-    users : list[str] = []
+    #69 friends decently small for testing 
+    #users : list[str] = ["https://steamcommunity.com/id/kaeloyote"]
+    #45 friends even better
+    users : list[str] = ["https://steamcommunity.com/id/TeeyProto"]
     
-    pass 
+    
+    
+    my_math_renderer : MathRendering = MathRendering()
+    my_math_renderer.visualize_persons_own_friendgroup()
+    
+    #for testing the function for loading in user data
+    #my_math_renderer.get_uids()
+    #my_math_renderer.visualize_persons_own_friendgroup_with_links(users)    
 
 def main():
     
-    test_steam_scraper() 
+    #test_steam_scraper() 
+    test_renderer()
 
 if __name__=="__main__":
     main()

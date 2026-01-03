@@ -46,8 +46,10 @@ class AdjacencyMatrixFileReader(AbstractFileReader):
                         subcount+=1
                     #create adjcency matrix now that we know the count size 
                     self.generate_adjacency_matrix(subcount)
-                    print(self.username_to_num_hash)
-                    print(self.num_to_username_hash)
+                    
+                    # print(self.username_to_num_hash)
+                    # print(self.num_to_username_hash)
+                    
                 #if not header process normally
                 else:
                     split_line = line.split(",")

@@ -85,6 +85,7 @@ class ScrapeData(ConsoleDecisionLoop):
     
     """Generates name for a file and saves userdata object to the file's generated name location"""
     def save_file(self, uid : str,users : list[UserData]):
+        print(f"Saving: {uid}")
         file_name : str = self.generate_save_file_name(uid)
         steam_friend_file_writer : SteamFriendsFileWriter = SteamFriendsFileWriter(file_name,users)
         steam_friend_file_writer.save_file()
@@ -173,7 +174,43 @@ class ScrapeData(ConsoleDecisionLoop):
                 
         loop_end=time.time()
         print(f"Completed iterating over the entire friend network in: {loop_start-loop_end}")
+    
+    """
+    @brief Obtains the friends of a user on steam from their URL, and then 
+    continues this process untill all of their friends have been processed. 
+    """
+    def obtain_user_and_friends(self, user_url : list[str] ):
+
+        #keeps track of all of the different links that have been encountered 
+        processed : set = set()
         
+        #save info for the root user 
+        steam_friends_crawler = SteamFriendsCrawler(user_url)
+        user_list : list[UserData] = steam_friends_crawler.get_user_data_list()
+        
+        self.save_file(user_url[0],user_list)
+        
+        loop_start = time.time()
+        #traverse further to a depth of 1 
+        for friend in user_list: 
+            link=friend.get_uid()
+            if link not in processed:
+
+                start=time.time()  
+                
+                processed.add(link)
+                
+                steam_friends_crawler = SteamFriendsCrawler([link])
+                user_list : list[UserData] = steam_friends_crawler.get_user_data_list()
+                self.save_file(link,user_list)
+
+                end = time.time()
+            
+                print(f"Completed {link} in {end-start} seconds")
+                
+        loop_end=time.time()
+        print(f"Completed iterating over the entire friend network in: {loop_end-loop_start}") 
+     
     """@brief Fundamentally the same function as the steam free roam function, 
     the only difference here is that this is not intended to use any I/O from the users 
     
@@ -193,6 +230,7 @@ class ScrapeData(ConsoleDecisionLoop):
         
         #only consider depth when value is positive 
         consider_depth : bool = False 
+
         if(depth > 0):
             consider_depth=True 
         
@@ -207,7 +245,7 @@ class ScrapeData(ConsoleDecisionLoop):
             
             link : str = queue_head.get_val()
             if link not in processed:
-                
+                print(f"Processing: {link}")
                 start=time.time()  
                 
                 processed.add(link)
@@ -239,16 +277,17 @@ class ScrapeData(ConsoleDecisionLoop):
                 depth-=1
                 
         loop_end=time.time()
-        print(f"Completed iterating over the entire friend network in: {loop_start-loop_end}")
+        print(f"Completed iterating over the entire friend network in: {loop_end-loop_start}")
         
         
     """Takes in a stem URL which either ends in /id/example_id or profiles/123456.. example  number, 
     so we have to split this and get the current time and root and add this together to make the out file directory"""
     def generate_save_file_name(self, user_url : str) ->str:
         split_url :str= user_url.split("/")
-        uid_str : str = split_url[3]+"-"+split_url[4]+"-"
-        current_time = time.strftime("%Y-%m-%d %H-%M-%S")
+        uid_str : str = split_url[3]+"-"+split_url[4]
+        current_time = time.strftime("%Y-%m-%d")
         return self.ROOT_OUT_DIR+"Users/"+uid_str+current_time+".csv"
+    
 
     ######################################################
     #YOUTUBE SCRAPER FUNCTIONS

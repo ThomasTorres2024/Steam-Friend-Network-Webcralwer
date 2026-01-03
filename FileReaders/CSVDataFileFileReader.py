@@ -21,7 +21,7 @@ class DataFileReader(AbstractFileReader):
                     if(len(all_friends)!=0):
                         new_user : UserData = UserData(user_uid,all_friends)
                     
-                    print(f"New user created at: {count}, UID: {user_uid}")
+                    #print(f"New user created at: {count}, UID: {user_uid}")
                     self.username_to_num_hash[user_uid]=count
                     self.username_to_user_object_hash[user_uid]=new_user
                     self.num_to_username_hash[count]=user_uid

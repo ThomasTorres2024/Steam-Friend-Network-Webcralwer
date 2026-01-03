@@ -110,7 +110,14 @@ class SocialMediaConnectionFinder:
         link = self.modify_link(self.queue_head.get_val())
         
         #toggle on request time, don't want to overload the site and get blocked, should vary this somewhat 
-        # time.sleep(random.random()*100)
+        #time.sleep(1+random.random())
+        #toggling this to see how random.rand works vs adding 1 sec if i get blocked or not quickly 
+        
+        #print("Sleeping")
+        #t=20s sleep worked, but it was way too slow 
+        #time.sleep()
+        #print("Sleep Over")
+        
         html_request_info = requests.get(link)
         souped_request_info : BeautifulSoup = BeautifulSoup(html_request_info.text)
         

@@ -3,6 +3,7 @@ from DecisionLoopConsole import ConsoleDecisionLoop
 from User import UserData
 from DataScraper.SteamFriendsWebCrawler import  SteamFriendsCrawler
 from DataScraper.SteamFriendFileWriter import SteamFriendsFileWriter 
+from DataScraper.DataScrape import ScrapeData
 from FileReaders.CSVDataFileFileReader import DataFileReader
 import time 
 import os 
@@ -73,7 +74,7 @@ class MathRendering(ConsoleDecisionLoop):
             
             #read in datafile(s) user entered and get corresponding UIDs 
             try:
-                file_name : str = ROOT_INSTANCE+person
+                file_name : str = ROOT_INSTANCE+person+".csv"
                 file_reader_instance : DataFileReader = DataFileReader(file_name)
                 all_users.append(file_reader_instance.get_user_list())
             #handle file DNE error 
@@ -105,11 +106,19 @@ class MathRendering(ConsoleDecisionLoop):
     def visualize_persons_own_friendgroup_random(self):
         pass 
     
+     
     
-    def visualize_persons_own_friendgroup_with_links(self, users : list[list[UserData]]):
-        pass 
+    def visualize_persons_own_friendgroup_with_links(self, user : str):
         
-        #scrape for users 
+        scraper : ScrapeData = ScrapeData()
+        
+        #go 1 deep, so traverse the user's friends and the user
+        scraper.obtain_user_and_friends(user)
+        
+        #get assosciated list of UIDs and turn it into a list of users 
+        
+        
+        #lastly feed into base visualizaer function  
     
     """
     @brief Takes all of the friends assosciated with a user, and iterates over them. 
@@ -132,9 +141,14 @@ class MathRendering(ConsoleDecisionLoop):
         for i in range(len(users)):
             user : UserData  = users[i]
             connections : list[str] = user.get_connections()
+            uid=user.get_uid()
+
+            #iterate through the list of the user's friends 
             for connection in connections:
-                if connection in friends:
-                    graph.add_edge(connection,user.get_uid())
+                #if the user's friend is in the original friend set, and if the UID is 
+                #not equal to itself 
+                if connection in friends and connection != uid:
+                    graph.add_edge(connection,uid)
                     
         # Create a color map
         cmap = plt.cm.get_cmap('viridis')
@@ -147,10 +161,12 @@ class MathRendering(ConsoleDecisionLoop):
         
         #draw and visualize 
         pos = networkx.spring_layout(graph, k=1.2)
-        networkx.draw(graph, pos, node_size=sizes, with_labels=True,font_size = 5, font_color='red', node_color=node_colors)
+        networkx.draw(graph, pos, node_size=sizes, with_labels=True,font_size = 10, font_color='red', node_color=node_colors)
         plt.title(f"Visualization of Mutual Friend Score")
+        plt.show()
         
         #save resulting render
+        plt.savefig(self.generate_render_file_name(users))
 
         
     def visualize_union_friends(self):
@@ -218,8 +234,6 @@ class MathRendering(ConsoleDecisionLoop):
                     self.save_file(user)
             except  Exception as e:
                 print(f"ERROR. Unexpected error ocurred: {e}")
-
-
     
     """Generates name for a file and saves userdata object to the file's generated name location"""
     def save_file(self,uid : str):
